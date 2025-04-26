@@ -75,7 +75,6 @@
             font-size: 1.5em;
             z-index: 11;
         }
-        /* Video dropzone styles removed */
         iframe {
             width: 100%;
             height: 100vh;
@@ -96,7 +95,6 @@
             margin-top: 20px;
             font-size: 1.1em;
         }
-        /* Video container styles removed */
         .error-message {
             color: var(--error-color);
             margin-top: 10px;
@@ -123,11 +121,49 @@
             width: 0%;
             transition: width 0.3s;
         }
+        .cloak-status {
+            background: var(--accent-color);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            font-size: 0.9em;
+            z-index: 1000;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        .cloak-status:hover {
+            opacity: 1;
+        }
+        .cloak-options {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+        }
+        .cloak-btn {
+            padding: 6px 12px;
+            font-size: 0.9em;
+            background: var(--accent-color);
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        .cloak-btn:hover {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
 
     <div id="home" class="page active">
+        <div id="cloak-status" class="cloak-status">
+            Cloaked ✓
+        </div>
+        <div class="cloak-options">
+            <button class="cloak-btn" onclick="toggleCloak()">Toggle Cloak</button>
+        </div>
         <h1>Game Player</h1>
         <div class="description">
             (Formerly something else... <strong>we don't speak about it.</strong>)<br><br>
@@ -135,7 +171,8 @@
             <strong>DO NOT SHARE THIS LINK.</strong><br><br>
             Only use this during teacher-approved free time or out of school.<br><br>
             If you don't like snitches, just chill and play games in peace 🎮.
-            This is open source! 
+            This is open source!<br><br>
+            <strong>Auto-cloaking is now enabled!</strong> This page is hidden as about:blank.
         </div>
         <div class="warning">
             🚨 If your teacher has GoGuardian pls do not play I am begging 🚨
@@ -146,12 +183,24 @@
     </div>
 
     <div id="drive" class="page">
+        <div id="cloak-status-drive" class="cloak-status">
+            Cloaked ✓
+        </div>
+        <div class="cloak-options">
+            <button class="cloak-btn" onclick="toggleCloak()">Toggle Cloak</button>
+        </div>
         <h1>Google Drive Folder</h1>
         <button onclick="openDrive()">Open Drive Folder</button><br><br>
         <button onclick="goTo('home')">Back to Home</button>
     </div>
 
     <div id="player" class="page">
+        <div id="cloak-status-player" class="cloak-status">
+            Cloaked ✓
+        </div>
+        <div class="cloak-options">
+            <button class="cloak-btn" onclick="toggleCloak()">Toggle Cloak</button>
+        </div>
         <h1>Drag & Play HTML</h1>
         <div id="dropbox" tabindex="0">
             Drag an HTML file here and press Enter<br>
@@ -165,9 +214,56 @@
         <button onclick="goTo('home')">Back to Home</button>
     </div>
 
-    <!-- Video and Moovsies sections removed -->
-
     <script>
+        // Auto-cloak on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            applyCloak();
+        });
+
+        let cloakActive = true;
+
+        function applyCloak() {
+            // Create the about:blank page and load our content into it
+            if (window.location.href !== 'about:blank') {
+                const html = document.documentElement.outerHTML;
+                const blob = new Blob([html], { type: 'text/html' });
+                const blobUrl = URL.createObjectURL(blob);
+                
+                // Open a new window with about:blank and write our content
+                const newWindow = window.open('about:blank', '_blank');
+                if (newWindow) {
+                    newWindow.document.write(html);
+                    newWindow.document.close();
+                    // Close the original window
+                    window.location.replace('about:blank');
+                } else {
+                    alert('Please allow popups for cloaking to work!');
+                    updateCloakStatus(false);
+                }
+            } else {
+                // We're already in an about:blank page
+                updateCloakStatus(true);
+            }
+        }
+
+        function updateCloakStatus(active) {
+            cloakActive = active;
+            const statusElements = document.querySelectorAll('.cloak-status');
+            statusElements.forEach(el => {
+                el.textContent = active ? 'Cloaked ✓' : 'Not Cloaked ✗';
+                el.style.backgroundColor = active ? 'var(--accent-color)' : 'var(--error-color)';
+            });
+        }
+
+        function toggleCloak() {
+            if (cloakActive) {
+                // Can't really "uncloak" once we're in about:blank
+                alert('Once cloaked, you need to reload the original page to uncloak.');
+            } else {
+                applyCloak();
+            }
+        }
+
         function goTo(page) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(page).classList.add('active');
@@ -302,8 +398,6 @@
             }
         });
 
-        // Video player code removed
-
         // Add file input support as an alternative to drag & drop
         function addFileInputSupport() {
             // For HTML section
@@ -338,6 +432,15 @@
                 }
             });
         }
+        
+        // Check if we're already in about:blank
+        window.addEventListener('load', function() {
+            if (window.location.href === 'about:blank') {
+                updateCloakStatus(true);
+            } else {
+                updateCloakStatus(false);
+            }
+        });
         
         // Initialize file input support
         window.addEventListener('DOMContentLoaded', addFileInputSupport);
