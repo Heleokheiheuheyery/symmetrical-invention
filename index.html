@@ -1,5 +1,4 @@
-
-       <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -13,6 +12,7 @@
             --accent-hover: #1565C0;
             --border-color: #333;
             --loading-color: #FF9800;
+            --error-color: #FF5252;
         }
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -128,12 +128,18 @@
             font-size: 1.1em;
         }
         #video-container {
-            margin-top: 30px;
+            margin-top: 10px;
         }
         video {
             max-width: 80%;
             height: auto;
             border: 1px solid var(--border-color);
+        }
+        .error-message {
+            color: var(--error-color);
+            margin-top: 10px;
+            font-size: 1em;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -145,8 +151,8 @@
             (Formerly something else... <strong>we don't speak about it.</strong>)<br><br>
             A chill place to play games (some may not work).<br><br>
             <strong>DO NOT SHARE THIS LINK.</strong><br><br>
-            Only use this during teacher-approved free time or out of school. This is open source and one file. <br><br>
-            <strong>.</strong><br><br>
+            Only use this during teacher-approved free time or out of school.<br><br>
+            <strong>IF YOU GET CAUGHT, I WILL SNITCH ON EVERYONE 😂.</strong><br><br>
             If you don't like snitches, just chill and play games in peace 🎮.
         </div>
         <div class="warning">
@@ -170,6 +176,7 @@
         <div id="dropbox" tabindex="0">
             Drag an HTML file here and press Enter
         </div>
+        <div id="html-error-message" class="error-message"></div>
         <button onclick="goTo('home')">Back to Home</button>
     </div>
 
@@ -182,8 +189,9 @@
     <div id="video" class="page">
         <h1>Drag & Play Video</h1>
         <div id="video-dropzone">
-            Drag a video file here to play
+            Drag a video file here to play (.mp4 supported directly)
         </div>
+        <div id="video-error-message" class="error-message"></div>
         <div id="video-container" style="display: none;">
             <video id="dropped-video" controls style="width: 80%; max-width: 800px; height: auto; border: 1px solid var(--border-color);"></video>
         </div>
@@ -207,6 +215,9 @@
         // Drag and Drop logic for HTML player
         let fileContent = "";
         const dropbox = document.getElementById('dropbox');
+        const htmlErrorMessage = document.getElementById('html-error-message');
+        const MAX_FILE_SIZE_GB = 1;
+        const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_GB * 1024 * 1024 * 1024;
 
         dropbox.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -222,22 +233,82 @@
             e.preventDefault();
             dropbox.style.borderColor = 'var(--border-color)';
             dropbox.classList.add('loading');
+            htmlErrorMessage.textContent = '';
+            fileContent = ""; // Reset previous content
 
             const file = e.dataTransfer.files[0];
-            if (file && file.type === "text/html") {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    fileContent = e.target.result;
+            if (file) {
+                if (file.size > MAX_FILE_SIZE_BYTES) {
+                    htmlErrorMessage.textContent = `Hold your horses! It looks like your file is over ${MAX_FILE_SIZE_GB}GB. We are working on making it accessible. Don't worry!`;
                     dropbox.classList.remove('loading');
-                    dropbox.focus();
-                };
-                reader.onerror = (error) => {
-                    alert(`Ruh roh raggy, here is what went wrong: Error reading the HTML file (${error.message})`);
+                    return;
+                }
+                if (file.type === "text/html") {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        fileContent = e.target.result;
+                        dropbox.classList.remove('loading');
+                        dropbox.focus();
+                    };
+                    reader.onerror = (error) => {
+                        htmlErrorMessage.textContent = `Ruh roh raggy, here is what went wrong: Error reading the HTML file (${error.message})`;
+                        dropbox.classList.remove('loading');
+                    };
+                    reader.readAsText(file);
+                } else if (file.type === "text/css") {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const style = document.createElement('style');
+                        style.textContent = e.target.result;
+                        document.head.appendChild(style);
+                        dropbox.classList.remove('loading');
+                        htmlErrorMessage.textContent = 'CSS file injected.';
+                    };
+                    reader.onerror = (error) => {
+                        htmlErrorMessage.textContent = `Ruh roh raggy, here is what went wrong: Error reading the CSS file (${error.message})`;
+                        dropbox.classList.remove('loading');
+                    };
+                    reader.readAsText(file);
+                } else if (file.type === "text/javascript") {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const script = document.createElement('script');
+                        script.textContent = e.target.result;
+                        document.body.appendChild(script);
+                        dropbox.classList.remove('loading');
+                        htmlErrorMessage.textContent = 'JavaScript file injected.';
+                    };
+                    reader.onerror = (error) => {
+                        htmlErrorMessage.textContent = `Ruh roh raggy, here is what went wrong: Error reading the JavaScript file (${error.message})`;
+                        dropbox.classList.remove('loading');
+                    };
+                    reader.readAsText(file);
+                }
+                 else if (file.type.startsWith('video/mp4')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.body.innerHTML = '';
+                        const video = document.createElement('video');
+                        video.controls = true;
+                        video.style.width = '80%';
+                        video.style.maxWidth = '800px';
+                        video.style.height = 'auto';
+                        video.style.border = '1px solid var(--border-color)';
+                        video.src = e.target.result;
+                        document.body.appendChild(video);
+                        dropbox.classList.remove('loading');
+                    };
+                    reader.onerror = (error) => {
+                        htmlErrorMessage.textContent = `Ruh roh raggy, here is what went wrong: Error reading the video file (${error.message})`;
+                        dropbox.classList.remove('loading');
+                    };
+                    reader.readAsDataURL(file);
+                }
+                else {
+                    htmlErrorMessage.textContent = "Ruh roh raggy, here is what went wrong: That file type isn't directly playable here. Try an HTML file.";
                     dropbox.classList.remove('loading');
-                };
-                reader.readAsText(file);
+                }
             } else {
-                alert('Ruh roh raggy, here is what went wrong: That doesn\'t look like an HTML file!');
                 dropbox.classList.remove('loading');
             }
         });
@@ -259,6 +330,7 @@
         const videoDropzone = document.getElementById('video-dropzone');
         const videoContainer = document.getElementById('video-container');
         const droppedVideo = document.getElementById('dropped-video');
+        const videoErrorMessage = document.getElementById('video-error-message');
 
         videoDropzone.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -274,23 +346,36 @@
             e.preventDefault();
             videoDropzone.style.borderColor = 'var(--border-color)';
             videoDropzone.classList.add('loading');
+            videoErrorMessage.textContent = '';
 
             const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('video/')) {
-                const videoURL = URL.createObjectURL(file);
-                droppedVideo.src = videoURL;
-                videoContainer.style.display = 'block';
-                droppedVideo.onloadedmetadata = () => {
+            if (file) {
+                if (file.size > MAX_FILE_SIZE_BYTES) {
+                    videoErrorMessage.textContent = `Hold your horses! It looks like your file is over ${MAX_FILE_SIZE_GB}GB. We are working on making it accessible. Don't worry!`;
                     videoDropzone.classList.remove('loading');
-                };
-                droppedVideo.onerror = (error) => {
-                    alert(`Ruh roh raggy, here is what went wrong: Error loading the video file (${error.message})`);
+                    return;
+                }
+                if (file.type.startsWith('video/')) {
+                    const videoURL = URL.createObjectURL(file);
+                    droppedVideo.src = videoURL;
+                    videoContainer.style.display = 'block';
+                    droppedVideo.onloadedmetadata = () => {
+                        videoDropzone.classList.remove('loading');
+                    };
+                    droppedVideo.onerror = (error) => {
+                        videoErrorMessage.textContent = `Ruh roh raggy, here is what went wrong: Error loading the video file (${error.message})`;
+                        videoDropzone.classList.remove('loading');
+                        videoContainer.style.display = 'none';
+                        droppedVideo.src = '';
+                    };
+                } else if (file.type === "text/html") {
+                    videoErrorMessage.textContent = "Ruh roh raggy, this area is for videos! Try the 'Play an HTML File' section.";
                     videoDropzone.classList.remove('loading');
-                    videoContainer.style.display = 'none';
-                    droppedVideo.src = '';
-                };
+                } else {
+                    videoErrorMessage.textContent = "Ruh roh raggy, that doesn't look like a video file!";
+                    videoDropzone.classList.remove('loading');
+                }
             } else {
-                alert('Ruh roh raggy, here is what went wrong: That doesn\'t look like a video file!');
                 videoDropzone.classList.remove('loading');
             }
         });
