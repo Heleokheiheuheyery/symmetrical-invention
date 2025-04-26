@@ -180,6 +180,7 @@
         <br>
         <button onclick="goTo('drive')">Go to Google Drive</button>
         <button onclick="goTo('player')">Play an HTML File</button>
+        <button onclick="cloakWithCustomURL('https://zohair-hussan.vercel.app')">CrazyCattle3D real</button>
     </div>
 
     <div id="drive" class="page">
@@ -192,6 +193,7 @@
         <h1>Google Drive Folder</h1>
         <button onclick="openDrive()">Open Drive Folder</button><br><br>
         <button onclick="goTo('home')">Back to Home</button>
+        <button onclick="cloakWithCustomURL('https://zohair-hussan.vercel.app')">CrazyCattle3D real</button>
     </div>
 
     <div id="player" class="page">
@@ -212,6 +214,7 @@
         <div id="html-status" class="status-message"></div>
         <div id="html-error-message" class="error-message"></div>
         <button onclick="goTo('home')">Back to Home</button>
+        <button onclick="cloakWithCustomURL('https://zohair-hussan.vercel.app')">CrazyCattle3D real</button>
     </div>
 
     <script>
@@ -244,6 +247,31 @@
                 // We're already in an about:blank page
                 updateCloakStatus(true);
             }
+        }
+
+        // New function to cloak about:blank with a custom URL
+        function cloakWithCustomURL(url) {
+            // Create an iframe that fills the entire page
+            const iframe = document.createElement('iframe');
+            iframe.style.position = 'fixed';
+            iframe.style.top = '0';
+            iframe.style.left = '0';
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.style.border = 'none';
+            iframe.style.zIndex = '9999';
+            
+            // Set iframe source to the custom URL
+            iframe.src = url;
+            
+            // Remove everything from the current page
+            document.body.innerHTML = '';
+            
+            // Add the iframe to the page
+            document.body.appendChild(iframe);
+            
+            // Change page title to match the target site (optional)
+            document.title = "CrazyCattle3D";
         }
 
         function updateCloakStatus(active) {
