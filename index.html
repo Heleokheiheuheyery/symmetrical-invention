@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+       <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,6 +12,7 @@
             --accent-color: #1E88E5;
             --accent-hover: #1565C0;
             --border-color: #333;
+            --loading-color: #FF9800;
         }
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -48,6 +50,30 @@
             color: #aaa;
             font-size: 1.2em;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        #dropbox.loading::before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+        #dropbox.loading::after {
+            content: 'Loading...';
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--loading-color);
+            font-size: 1.5em;
+            z-index: 11;
         }
         #video-dropzone {
             border: 3px dashed var(--border-color);
@@ -56,6 +82,30 @@
             color: #aaa;
             font-size: 1.2em;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        #video-dropzone.loading::before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+        #video-dropzone.loading::after {
+            content: 'Loading...';
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--loading-color);
+            font-size: 1.5em;
+            z-index: 11;
         }
         iframe {
             width: 100%;
@@ -95,8 +145,8 @@
             (Formerly something else... <strong>we don't speak about it.</strong>)<br><br>
             A chill place to play games (some may not work).<br><br>
             <strong>DO NOT SHARE THIS LINK.</strong><br><br>
-            Only use this during teacher-approved free time or out of school.<br><br>
-            <strong>IF YOU GET CAUGHT, I WILL SNITCH ON EVERYONE 😂.</strong><br><br>
+            Only use this during teacher-approved free time or out of school. This is open source and one file. <br><br>
+            <strong>.</strong><br><br>
             If you don't like snitches, just chill and play games in peace 🎮.
         </div>
         <div class="warning">
@@ -171,17 +221,24 @@
         dropbox.addEventListener('drop', (e) => {
             e.preventDefault();
             dropbox.style.borderColor = 'var(--border-color)';
+            dropbox.classList.add('loading');
 
             const file = e.dataTransfer.files[0];
             if (file && file.type === "text/html") {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     fileContent = e.target.result;
+                    dropbox.classList.remove('loading');
                     dropbox.focus();
+                };
+                reader.onerror = (error) => {
+                    alert(`Ruh roh raggy, here is what went wrong: Error reading the HTML file (${error.message})`);
+                    dropbox.classList.remove('loading');
                 };
                 reader.readAsText(file);
             } else {
-                alert('Please drop a valid HTML file.');
+                alert('Ruh roh raggy, here is what went wrong: That doesn\'t look like an HTML file!');
+                dropbox.classList.remove('loading');
             }
         });
 
@@ -216,14 +273,25 @@
         videoDropzone.addEventListener('drop', (e) => {
             e.preventDefault();
             videoDropzone.style.borderColor = 'var(--border-color)';
+            videoDropzone.classList.add('loading');
 
             const file = e.dataTransfer.files[0];
             if (file && file.type.startsWith('video/')) {
                 const videoURL = URL.createObjectURL(file);
                 droppedVideo.src = videoURL;
                 videoContainer.style.display = 'block';
+                droppedVideo.onloadedmetadata = () => {
+                    videoDropzone.classList.remove('loading');
+                };
+                droppedVideo.onerror = (error) => {
+                    alert(`Ruh roh raggy, here is what went wrong: Error loading the video file (${error.message})`);
+                    videoDropzone.classList.remove('loading');
+                    videoContainer.style.display = 'none';
+                    droppedVideo.src = '';
+                };
             } else {
-                alert('Please drop a valid video file.');
+                alert('Ruh roh raggy, here is what went wrong: That doesn\'t look like a video file!');
+                videoDropzone.classList.remove('loading');
             }
         });
     </script>
