@@ -75,38 +75,7 @@
             font-size: 1.5em;
             z-index: 11;
         }
-        #video-dropzone {
-            border: 3px dashed var(--border-color);
-            padding: 50px;
-            margin-top: 30px;
-            color: #aaa;
-            font-size: 1.2em;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-        #video-dropzone.loading::before {
-            content: '';
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 10;
-        }
-        #video-dropzone.loading::after {
-            content: 'Loading...';
-            display: block;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: var(--loading-color);
-            font-size: 1.5em;
-            z-index: 11;
-        }
+        /* Video dropzone styles removed */
         iframe {
             width: 100%;
             height: 100vh;
@@ -127,14 +96,7 @@
             margin-top: 20px;
             font-size: 1.1em;
         }
-        #video-container {
-            margin-top: 10px;
-        }
-        video {
-            max-width: 80%;
-            height: auto;
-            border: 1px solid var(--border-color);
-        }
+        /* Video container styles removed */
         .error-message {
             color: var(--error-color);
             margin-top: 10px;
@@ -181,8 +143,6 @@
         <br>
         <button onclick="goTo('drive')">Go to Google Drive</button>
         <button onclick="goTo('player')">Play an HTML File</button>
-        <button onclick="goTo('movies')">Button to moovsies</button>
-        <button onclick="goTo('video')">Insert video(any video format) here</button>
     </div>
 
     <div id="drive" class="page">
@@ -205,28 +165,7 @@
         <button onclick="goTo('home')">Back to Home</button>
     </div>
 
-    <div id="movies" class="page">
-        <h1>Moovsies</h1>
-        <button onclick="openMovies()">Go to Moovsies Folder</button><br><br>
-        <button onclick="goTo('home')">Back to Home</button>
-    </div>
-
-    <div id="video" class="page">
-        <h1>Drag & Play Video</h1>
-        <div id="video-dropzone">
-            Drag a video file here to play<br>
-            <span style="font-size: 0.8em; color: #888;">Now supports files over 1GB!</span>
-        </div>
-        <div class="progress-container" id="video-progress-container">
-            <div class="progress-bar" id="video-progress-bar"></div>
-        </div>
-        <div id="video-status" class="status-message"></div>
-        <div id="video-error-message" class="error-message"></div>
-        <div id="video-container" style="display: none;">
-            <video id="dropped-video" controls style="width: 80%; max-width: 800px; height: auto; border: 1px solid var(--border-color);"></video>
-        </div>
-        <button onclick="goTo('home')">Back to Home</button>
-    </div>
+    <!-- Video and Moovsies sections removed -->
 
     <script>
         function goTo(page) {
@@ -238,10 +177,6 @@
             window.open('https://drive.google.com/drive/folders/1ou3mI5xJVQv8Vt_MvwejPtf7zStSnU-s?usp=sharing', '_blank');
         }
 
-        function openMovies() {
-            window.open('https://drive.google.com/drive/folders/1nvLWCEh2eBFoht1f_eX53CjWx7RJtzUG?usp=sharing', '_blank');
-        }
-
         // Updated Drag and Drop logic for HTML player with support for large files
         let fileContent = "";
         const dropbox = document.getElementById('dropbox');
@@ -250,8 +185,8 @@
         const htmlProgressContainer = document.getElementById('html-progress-container');
         const htmlProgressBar = document.getElementById('html-progress-bar');
         
-        
-        const MAX_FILE_SIZE_GB = 100;
+        // Increased file size limit to 5GB
+        const MAX_FILE_SIZE_GB = 5;
         const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_GB * 1024 * 1024 * 1024;
 
         dropbox.addEventListener('dragover', (e) => {
@@ -338,7 +273,7 @@
                     };
                     reader.readAsText(file);
                 } else if (file.type.startsWith('video/')) {
-                    htmlStatusMessage.textContent = "This looks like a video file. Try the 'Insert video' section instead.";
+                    htmlErrorMessage.textContent = "Video files are not supported.";
                     dropbox.classList.remove('loading');
                 } else {
                     htmlErrorMessage.textContent = "That file type isn't directly playable here. Try an HTML file.";
@@ -367,96 +302,7 @@
             }
         });
 
-        // Updated Drag and Drop logic for video player with support for large files
-        const videoDropzone = document.getElementById('video-dropzone');
-        const videoContainer = document.getElementById('video-container');
-        const droppedVideo = document.getElementById('dropped-video');
-        const videoErrorMessage = document.getElementById('video-error-message');
-        const videoStatusMessage = document.getElementById('video-status');
-        const videoProgressContainer = document.getElementById('video-progress-container');
-        const videoProgressBar = document.getElementById('video-progress-bar');
-
-        videoDropzone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            videoDropzone.style.borderColor = 'var(--accent-color)';
-        });
-
-        videoDropzone.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            videoDropzone.style.borderColor = 'var(--border-color)';
-        });
-
-        videoDropzone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            videoDropzone.style.borderColor = 'var(--border-color)';
-            videoDropzone.classList.add('loading');
-            videoErrorMessage.textContent = '';
-            videoStatusMessage.textContent = '';
-            videoProgressContainer.style.display = 'none';
-            videoProgressBar.style.width = '0%';
-            videoContainer.style.display = 'none';
-
-            const file = e.dataTransfer.files[0];
-            if (file) {
-                if (file.size > MAX_FILE_SIZE_BYTES) {
-                    videoErrorMessage.textContent = `File is over ${MAX_FILE_SIZE_GB}GB. This may cause browser performance issues.`;
-                    // We'll still try to load it, but with a warning
-                }
-                
-                if (file.type.startsWith('video/')) {
-                    videoProgressContainer.style.display = 'block';
-                    
-                    // For video files, we need to use a different approach for large files
-                    // Instead of loading the entire file into memory, we create a URL
-                    try {
-                        const videoURL = URL.createObjectURL(file);
-                        droppedVideo.src = videoURL;
-                        
-                        // Setup video loading tracking
-                        droppedVideo.onloadeddata = () => {
-                            videoProgressBar.style.width = '100%';
-                            videoStatusMessage.textContent = 'Video loaded successfully!';
-                            videoContainer.style.display = 'block';
-                            videoDropzone.classList.remove('loading');
-                        };
-                        
-                        // Show loading progress
-                        droppedVideo.onprogress = (event) => {
-                            if (event.lengthComputable) {
-                                const percentLoaded = Math.round((event.loaded / event.total) * 100);
-                                videoProgressBar.style.width = percentLoaded + '%';
-                                videoStatusMessage.textContent = `Loading: ${percentLoaded}%`;
-                            } else {
-                                // If length is not computable, just show indeterminate progress
-                                videoStatusMessage.textContent = 'Loading video...';
-                            }
-                        };
-                        
-                        droppedVideo.onerror = (error) => {
-                            videoErrorMessage.textContent = `Error loading the video file.`;
-                            videoDropzone.classList.remove('loading');
-                            videoProgressContainer.style.display = 'none';
-                            droppedVideo.src = '';
-                        };
-                        
-                        // Start loading
-                        droppedVideo.load();
-                    } catch (error) {
-                        videoErrorMessage.textContent = `Error processing the video file: ${error.message}`;
-                        videoDropzone.classList.remove('loading');
-                        videoProgressContainer.style.display = 'none';
-                    }
-                } else if (file.type === "text/html") {
-                    videoErrorMessage.textContent = "This area is for videos! Try the 'Play an HTML File' section.";
-                    videoDropzone.classList.remove('loading');
-                } else {
-                    videoErrorMessage.textContent = "That doesn't look like a video file!";
-                    videoDropzone.classList.remove('loading');
-                }
-            } else {
-                videoDropzone.classList.remove('loading');
-            }
-        });
+        // Video player code removed
 
         // Add file input support as an alternative to drag & drop
         function addFileInputSupport() {
@@ -489,38 +335,6 @@
                     
                     // Use the existing drop handler
                     dropbox.dispatchEvent(new DragEvent('drop', mockDropEvent));
-                }
-            });
-            
-            // For Video section
-            const videoFileInput = document.createElement('input');
-            videoFileInput.type = 'file';
-            videoFileInput.accept = 'video/*';
-            videoFileInput.style.display = 'none';
-            
-            const videoFileButton = document.createElement('button');
-            videoFileButton.textContent = 'Or Select Video';
-            videoFileButton.onclick = (e) => {
-                e.preventDefault();
-                videoFileInput.click();
-            };
-            
-            videoDropzone.parentNode.insertBefore(videoFileButton, videoDropzone.nextSibling);
-            videoDropzone.parentNode.insertBefore(videoFileInput, videoFileButton.nextSibling);
-            
-            videoFileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    // Create a mock drop event
-                    const mockDropEvent = {
-                        preventDefault: () => {},
-                        dataTransfer: {
-                            files: [file]
-                        }
-                    };
-                    
-                    // Use the existing drop handler
-                    videoDropzone.dispatchEvent(new DragEvent('drop', mockDropEvent));
                 }
             });
         }
