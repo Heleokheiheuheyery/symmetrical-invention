@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Game Player</title>
-    <meta name="description" content="Game Player (formerly something else we don't talk about). Play games safely if allowed. Some games may not work. DO NOT SHARE. Only during free time or out of school. If you get caught, I WILL SNITCH. Also, if your teacher has GoGuardian pls do not play I am begging you. We also have movies.">
+    <meta name="description" content="Game Player (formerly something else we don't talk about). Play games safely if allowed. Some games may not work. DO NOT SHARE. Only during free time or out of school. If you get caught, I WILL SNITCH. Also, if your teacher has GoGuardian pls do not play I am begging you.">
     <style>
         :root {
             --bg-color: #121212;
@@ -49,6 +49,14 @@
             font-size: 1.2em;
             cursor: pointer;
         }
+        #video-dropzone {
+            border: 3px dashed var(--border-color);
+            padding: 50px;
+            margin-top: 30px;
+            color: #aaa;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
         iframe {
             width: 100%;
             height: 100vh;
@@ -72,9 +80,6 @@
         #video-container {
             margin-top: 30px;
         }
-        #video-input {
-            display: none;
-        }
         video {
             max-width: 80%;
             height: auto;
@@ -90,8 +95,9 @@
             (Formerly something else... <strong>we don't speak about it.</strong>)<br><br>
             A chill place to play games (some may not work).<br><br>
             <strong>DO NOT SHARE THIS LINK.</strong><br><br>
-            Only use this during teacher-approved free time or out of school. If you don't like snitches, just chill and play games in peace 🎮.<br><br>
-            <strong>Update: Added Movies</strong><br><br>
+            Only use this during teacher-approved free time or out of school.<br><br>
+            <strong>IF YOU GET CAUGHT, I WILL SNITCH ON EVERYONE 😂.</strong><br><br>
+            If you don't like snitches, just chill and play games in peace 🎮.
         </div>
         <div class="warning">
             🚨 If your teacher has GoGuardian pls do not play I am begging 🚨
@@ -124,10 +130,12 @@
     </div>
 
     <div id="video" class="page">
-        <h1>Insert Video Here</h1>
-        <input type="file" id="video-input" accept="video/*">
-        <div id="video-container">
-            <video id="uploaded-video" controls style="width: 80%; max-width: 800px; height: auto; border: 1px solid var(--border-color);"></video>
+        <h1>Drag & Play Video</h1>
+        <div id="video-dropzone">
+            Drag a video file here to play
+        </div>
+        <div id="video-container" style="display: none;">
+            <video id="dropped-video" controls style="width: 80%; max-width: 800px; height: auto; border: 1px solid var(--border-color);"></video>
         </div>
         <button onclick="goTo('home')">Back to Home</button>
     </div>
@@ -190,16 +198,32 @@
             }
         });
 
-        // Video upload logic
-        const videoInput = document.getElementById('video-input');
-        const videoPlayer = document.getElementById('uploaded-video');
+        // Drag and Drop logic for video player
+        const videoDropzone = document.getElementById('video-dropzone');
+        const videoContainer = document.getElementById('video-container');
+        const droppedVideo = document.getElementById('dropped-video');
 
-        videoInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
+        videoDropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            videoDropzone.style.borderColor = 'var(--accent-color)';
+        });
+
+        videoDropzone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            videoDropzone.style.borderColor = 'var(--border-color)';
+        });
+
+        videoDropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            videoDropzone.style.borderColor = 'var(--border-color)';
+
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('video/')) {
                 const videoURL = URL.createObjectURL(file);
-                videoPlayer.src = videoURL;
-                videoPlayer.style.display = 'block';
+                droppedVideo.src = videoURL;
+                videoContainer.style.display = 'block';
+            } else {
+                alert('Please drop a valid video file.');
             }
         });
     </script>
