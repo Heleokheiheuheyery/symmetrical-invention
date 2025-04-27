@@ -1,481 +1,167 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Game Player</title>
-    <meta name="description" content="the ultimate g4me site (No procsies yet.)">
-    <style>
-        :root {
-            --bg-color: #121212;
-            --text-color: #e0e0e0;
-            --accent-color: #1E88E5;
-            --accent-hover: #1565C0;
-            --border-color: #333;
-            --loading-color: #FF9800;
-            --error-color: #FF5252;
-        }
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-            background: var(--bg-color);
-            color: var(--text-color);
-        }
-        .page {
-            display: none;
-            padding: 50px 20px;
-        }
-        .active {
-            display: block;
-        }
-        button {
-            font-size: 1.2rem;
-            padding: 15px 30px;
-            margin: 10px;
-            border: none;
-            border-radius: 8px;
-            background-color: var(--accent-color);
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: var(--accent-hover);
-        }
-        #dropbox {
-            border: 3px dashed var(--border-color);
-            padding: 50px;
-            margin-top: 30px;
-            color: #aaa;
-            font-size: 1.2em;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-        #dropbox.loading::before {
-            content: '';
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 10;
-        }
-        #dropbox.loading::after {
-            content: 'Loading...';
-            display: block;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: var(--loading-color);
-            font-size: 1.5em;
-            z-index: 11;
-        }
-        iframe {
-            width: 100%;
-            height: 100vh;
-            border: none;
-            background: var(--bg-color);
-        }
-        .description {
-            font-size: 0.95em;
-            margin: 20px auto;
-            max-width: 700px;
-            color: #bbb;
-            padding: 10px;
-            line-height: 1.6;
-        }
-        .warning {
-            color: #FF5252;
-            font-weight: bold;
-            margin-top: 20px;
-            font-size: 1.1em;
-        }
-        .error-message {
-            color: var(--error-color);
-            margin-top: 10px;
-            font-size: 1em;
-            font-weight: bold;
-        }
-        .status-message {
-            color: var(--loading-color);
-            margin-top: 10px;
-            font-size: 1em;
-        }
-        .progress-container {
-            width: 80%;
-            margin: 20px auto;
-            background-color: var(--border-color);
-            border-radius: 10px;
-            height: 20px;
-            display: none;
-        }
-        .progress-bar {
-            height: 100%;
-            border-radius: 10px;
-            background-color: var(--accent-color);
-            width: 0%;
-            transition: width 0.3s;
-        }
-        .cloak-status {
-            background: var(--accent-color);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            font-size: 0.9em;
-            z-index: 1000;
-            opacity: 0.8;
-            transition: opacity 0.3s;
-        }
-        .cloak-status:hover {
-            opacity: 1;
-        }
-        .cloak-options {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            z-index: 1000;
-        }
-        .cloak-btn {
-            padding: 6px 12px;
-            font-size: 0.9em;
-            background: var(--accent-color);
-            opacity: 0.8;
-            transition: opacity 0.3s;
-        }
-        .cloak-btn:hover {
-            opacity: 1;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Game Player</title>
+  <meta name="description" content="Game Player (formerly something else we don't talk about). Play games safely if allowed. Some games may not work. DO NOT SHARE. Only during free time or out of school. If you get caught, I WILL SNITCH. Also, if your teacher has GoGuardian pls do not play I am begging you.">
+  <style>
+    :root {
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      --accent-color: #1E88E5;
+      --accent-hover: #1565C0;
+      --border-color: #333;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      background: var(--bg-color);
+      color: var(--text-color);
+    }
+    .page {
+      display: none;
+      padding: 50px 20px;
+    }
+    .active {
+      display: block;
+    }
+    button {
+      font-size: 1.2rem;
+      padding: 15px 30px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: var(--accent-color);
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: var(--accent-hover);
+    }
+    #dropbox {
+      border: 3px dashed var(--border-color);
+      padding: 50px;
+      margin-top: 30px;
+      color: #aaa;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
+    iframe {
+      width: 100%;
+      height: 100vh;
+      border: none;
+      background: var(--bg-color);
+    }
+    .description {
+      font-size: 0.95em;
+      margin: 20px auto;
+      max-width: 700px;
+      color: #bbb;
+      padding: 10px;
+      line-height: 1.6;
+    }
+    .warning {
+      color: #FF5252;
+      font-weight: bold;
+      margin-top: 20px;
+      font-size: 1.1em;
+    }
+  </style>
 </head>
 <body>
 
-    <div id="home" class="page active">
-        <div id="cloak-status" class="cloak-status">
-            Cloaked ✓
-        </div>
-        <div class="cloak-options">
-            <button class="cloak-btn" onclick="toggleCloak()">Toggle Cloak</button>
-        </div>
-        <h1>Game Player</h1>
-        <div class="description">
-            (Formerly something else... <strong>we don't speak about it.</strong>)<br><br>
-            A chill place to play games (some may not work).<br><br>
-            <strong>DO NOT SHARE THIS LINK.</strong><br><br>
-            Only use this during teacher-approved free time or out of school.<br><br>
-            If you don't like snitches, just chill and play games in peace 🎮. IF YOU HAVE REMAINING MINECRAFT FILES GMAIL IT TO <strong>aio8uiuy57i6nbf6t8@gmail.com</strong>
-            This is open source!<br><br>
-            <strong>Auto-cloaking is now enabled!</strong> This page is hidden as about:blank.
-        </div>
-        <div class="warning">
-            🚨 If your teacher has GoGuardian pls do not play I am begging 🚨
-        </div>
-        <br>
-        <button onclick="goTo('drive')">Go to Google Drive</button>
-        <button onclick="goTo('player')">Play an HTML File</button>
-        <button onclick="cloakWithCustomURL('https://zohair-hussan.vercel.app')">CrazyCattle3D real</button>
-        <button onclick="cloakWithCustomURL('https://skiing.vercel.app')">Ski</button>
-        <button onclick="cloakWithCustomURL('https://anappleformethanks.vercel.app')">Baldi</button>
-        <button onclick="cloakWithCustomURL('https://poop-ten-bice.vercel.app')">Minecraft number 1</button>
+  <!-- HOME PAGE -->
+  <div id="home" class="page active">
+    <h1>Game Player</h1>
+    <div class="description">
+      (Formerly something else... <strong>we don't speak about it.</strong>)<br><br>
+      A chill place to play games (some may not work).<br><br>
+      <strong>DO NOT SHARE THIS LINK.</strong><br><br>
+      Only use this during teacher-approved free time or out of school.<br><br>
+      <strong>THIS IS OPEN SOURCE.</strong><br><br>
+      If you don't like snitches, just chill and play games in peace 🎮.
     </div>
-
-    <div id="drive" class="page">
-        <div id="cloak-status-drive" class="cloak-status">
-            Cloaked ✓
-        </div>
-        <div class="cloak-options">
-            <button class="cloak-btn" onclick="toggleCloak()">Toggle Cloak</button>
-        </div>
-        <h1>Google Drive Folder</h1>
-        <button onclick="openDrive()">Open Drive Folder</button><br><br>
-        <button onclick="goTo('home')">Back to Home</button>
-        <button onclick="cloakWithCustomURL('https://zohair-hussan.vercel.app')">CrazyCattle3D real</button>
+    <div class="warning">
+      🚨 If your teacher has GoGuardian pls do not play I am begging 🚨
     </div>
+    <br>
+    <button onclick="goTo('drive')">Go to Google Drive</button>
+    <button onclick="goTo('player')">Play an HTML File</button>
+  </div>
 
-    <div id="player" class="page">
-        <div id="cloak-status-player" class="cloak-status">
-            Cloaked ✓
-        </div>
-        <div class="cloak-options">
-            <button class="cloak-btn" onclick="toggleCloak()">Toggle Cloak</button>
-        </div>
-        <h1>Drag & Play HTML</h1>
-        <div id="dropbox" tabindex="0">
-            Drag an HTML file here and press Enter<br>
-            <span style="font-size: 0.8em; color: #888;">Now supports files over 1GB!</span>
-        </div>
-        <div class="progress-container" id="html-progress-container">
-            <div class="progress-bar" id="html-progress-bar"></div>
-        </div>
-        <div id="html-status" class="status-message"></div>
-        <div id="html-error-message" class="error-message"></div>
-        <button onclick="goTo('home')">Back to Home</button>
-        <button onclick="cloakWithCustomURL('https://zohair-hussan.vercel.app')">CrazyCattle3D real</button>
+  <!-- DRIVE PAGE -->
+  <div id="drive" class="page">
+    <h1>Google Drive Folder</h1>
+    <button onclick="openDrive()">Open Drive Folder</button><br><br>
+    <button onclick="goTo('home')">Back to Home</button>
+  </div>
+
+  <!-- PLAYER PAGE -->
+  <div id="player" class="page">
+    <h1>Drag & Play HTML</h1>
+    <div id="dropbox" tabindex="0">
+      Drag an HTML file here and press Enter
     </div>
+    <button onclick="goTo('home')">Back to Home</button>
+  </div>
 
-    <script>
-        // Auto-cloak on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            applyCloak();
-        });
+  <script>
+    function goTo(page) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(page).classList.add('active');
+    }
 
-        let cloakActive = true;
+    function openDrive() {
+      window.open('https://drive.google.com/drive/folders/1ou3mI5xJVQv8Vt_MvwejPtf7zStSnU-s?usp=sharing', '_blank');
+    }
 
-        function applyCloak() {
-            // Create the about:blank page and load our content into it
-            if (window.location.href !== 'about:blank') {
-                const html = document.documentElement.outerHTML;
-                const blob = new Blob([html], { type: 'text/html' });
-                const blobUrl = URL.createObjectURL(blob);
-                
-                // Open a new window with about:blank and write our content
-                const newWindow = window.open('about:blank', '_blank');
-                if (newWindow) {
-                    newWindow.document.write(html);
-                    newWindow.document.close();
-                    // Close the original window
-                    window.location.replace('about:blank');
-                } else {
-                    alert('Please allow popups for cloaking to work!');
-                    updateCloakStatus(false);
-                }
-            } else {
-                // We're already in an about:blank page
-                updateCloakStatus(true);
-            }
-        }
+    // Drag and Drop logic
+    let fileContent = "";
+    const dropbox = document.getElementById('dropbox');
 
-        // New function to cloak about:blank with a custom URL
-        function cloakWithCustomURL(url) {
-            // Create an iframe that fills the entire page
-            const iframe = document.createElement('iframe');
-            iframe.style.position = 'fixed';
-            iframe.style.top = '0';
-            iframe.style.left = '0';
-            iframe.style.width = '100%';
-            iframe.style.height = '100%';
-            iframe.style.border = 'none';
-            iframe.style.zIndex = '9999';
-            
-            // Set iframe source to the custom URL
-            iframe.src = url;
-            
-            // Remove everything from the current page
-            document.body.innerHTML = '';
-            
-            // Add the iframe to the page
-            document.body.appendChild(iframe);
-            
-            // Change page title to match the target site (optional)
-            document.title = "CrazyCattle3D";
-        }
+    dropbox.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropbox.style.borderColor = 'var(--accent-color)';
+    });
 
-        function updateCloakStatus(active) {
-            cloakActive = active;
-            const statusElements = document.querySelectorAll('.cloak-status');
-            statusElements.forEach(el => {
-                el.textContent = active ? 'Cloaked ✓' : 'Not Cloaked ✗';
-                el.style.backgroundColor = active ? 'var(--accent-color)' : 'var(--error-color)';
-            });
-        }
+    dropbox.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dropbox.style.borderColor = 'var(--border-color)';
+    });
 
-        function toggleCloak() {
-            if (cloakActive) {
-                // Can't really "uncloak" once we're in about:blank
-                alert('Once cloaked, you need to reload the original page to uncloak.');
-            } else {
-                applyCloak();
-            }
-        }
+    dropbox.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropbox.style.borderColor = 'var(--border-color)';
 
-        function goTo(page) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(page).classList.add('active');
-        }
+      const file = e.dataTransfer.files[0];
+      if (file && file.type === "text/html") {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          fileContent = e.target.result;
+          dropbox.focus();
+        };
+        reader.readAsText(file);
+      } else {
+        alert('Please drop a valid HTML file.');
+      }
+    });
 
-        function openDrive() {
-            window.open('https://drive.google.com/drive/folders/1ou3mI5xJVQv8Vt_MvwejPtf7zStSnU-s?usp=sharing', '_blank');
-        }
+    dropbox.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && fileContent) {
+        document.body.innerHTML = '';
+        const iframe = document.createElement('iframe');
+        document.body.appendChild(iframe);
 
-        // Updated Drag and Drop logic for HTML player with support for large files
-        let fileContent = "";
-        const dropbox = document.getElementById('dropbox');
-        const htmlErrorMessage = document.getElementById('html-error-message');
-        const htmlStatusMessage = document.getElementById('html-status');
-        const htmlProgressContainer = document.getElementById('html-progress-container');
-        const htmlProgressBar = document.getElementById('html-progress-bar');
-        
-        // Increased file size limit to 5GB
-        const MAX_FILE_SIZE_GB = 5;
-        const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_GB * 1024 * 1024 * 1024;
-
-        dropbox.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropbox.style.borderColor = 'var(--accent-color)';
-        });
-
-        dropbox.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            dropbox.style.borderColor = 'var(--border-color)';
-        });
-
-        dropbox.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropbox.style.borderColor = 'var(--border-color)';
-            dropbox.classList.add('loading');
-            htmlErrorMessage.textContent = '';
-            htmlStatusMessage.textContent = '';
-            fileContent = ""; // Reset previous content
-            htmlProgressContainer.style.display = 'none';
-            htmlProgressBar.style.width = '0%';
-
-            const file = e.dataTransfer.files[0];
-            if (file) {
-                if (file.size > MAX_FILE_SIZE_BYTES) {
-                    htmlErrorMessage.textContent = `File is over ${MAX_FILE_SIZE_GB}GB. This may cause browser performance issues.`;
-                    // We'll still try to load it, but with a warning
-                }
-                
-                if (file.type === "text/html") {
-                    htmlProgressContainer.style.display = 'block';
-                    
-                    const reader = new FileReader();
-                    
-                    reader.onprogress = (event) => {
-                        if (event.lengthComputable) {
-                            const percentLoaded = Math.round((event.loaded / event.total) * 100);
-                            htmlProgressBar.style.width = percentLoaded + '%';
-                            htmlStatusMessage.textContent = `Loading: ${percentLoaded}%`;
-                        }
-                    };
-                    
-                    reader.onload = (e) => {
-                        fileContent = e.target.result;
-                        dropbox.classList.remove('loading');
-                        htmlStatusMessage.textContent = 'File loaded! Press Enter to run.';
-                        htmlProgressBar.style.width = '100%';
-                        dropbox.focus();
-                    };
-                    
-                    reader.onerror = (error) => {
-                        htmlErrorMessage.textContent = `Error reading the HTML file (${error.message})`;
-                        dropbox.classList.remove('loading');
-                        htmlProgressContainer.style.display = 'none';
-                    };
-                    
-                    reader.readAsText(file);
-                } else if (file.type === "text/css") {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const style = document.createElement('style');
-                        style.textContent = e.target.result;
-                        document.head.appendChild(style);
-                        dropbox.classList.remove('loading');
-                        htmlStatusMessage.textContent = 'CSS file injected successfully.';
-                    };
-                    reader.onerror = (error) => {
-                        htmlErrorMessage.textContent = `Error reading the CSS file (${error.message})`;
-                        dropbox.classList.remove('loading');
-                    };
-                    reader.readAsText(file);
-                } else if (file.type === "text/javascript") {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const script = document.createElement('script');
-                        script.textContent = e.target.result;
-                        document.body.appendChild(script);
-                        dropbox.classList.remove('loading');
-                        htmlStatusMessage.textContent = 'JavaScript file injected successfully.';
-                    };
-                    reader.onerror = (error) => {
-                        htmlErrorMessage.textContent = `Error reading the JavaScript file (${error.message})`;
-                        dropbox.classList.remove('loading');
-                    };
-                    reader.readAsText(file);
-                } else if (file.type.startsWith('video/')) {
-                    htmlErrorMessage.textContent = "Video files are not supported.";
-                    dropbox.classList.remove('loading');
-                } else {
-                    htmlErrorMessage.textContent = "That file type isn't directly playable here. Try an HTML file.";
-                    dropbox.classList.remove('loading');
-                }
-            } else {
-                dropbox.classList.remove('loading');
-            }
-        });
-
-        dropbox.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && fileContent) {
-                htmlStatusMessage.textContent = 'Loading game...';
-                
-                // Use setTimeout to allow UI to update before heavy processing
-                setTimeout(() => {
-                    document.body.innerHTML = '';
-                    const iframe = document.createElement('iframe');
-                    document.body.appendChild(iframe);
-
-                    const doc = iframe.contentWindow.document;
-                    doc.open();
-                    doc.write(fileContent);
-                    doc.close();
-                }, 100);
-            }
-        });
-
-        // Add file input support as an alternative to drag & drop
-        function addFileInputSupport() {
-            // For HTML section
-            const htmlFileInput = document.createElement('input');
-            htmlFileInput.type = 'file';
-            htmlFileInput.accept = '.html,.css,.js';
-            htmlFileInput.style.display = 'none';
-            
-            const htmlFileButton = document.createElement('button');
-            htmlFileButton.textContent = 'Or Select File';
-            htmlFileButton.onclick = (e) => {
-                e.preventDefault();
-                htmlFileInput.click();
-            };
-            
-            dropbox.parentNode.insertBefore(htmlFileButton, dropbox.nextSibling);
-            dropbox.parentNode.insertBefore(htmlFileInput, htmlFileButton.nextSibling);
-            
-            htmlFileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    // Create a mock drop event
-                    const mockDropEvent = {
-                        preventDefault: () => {},
-                        dataTransfer: {
-                            files: [file]
-                        }
-                    };
-                    
-                    // Use the existing drop handler
-                    dropbox.dispatchEvent(new DragEvent('drop', mockDropEvent));
-                }
-            });
-        }
-        
-        // Check if we're already in about:blank
-        window.addEventListener('load', function() {
-            if (window.location.href === 'about:blank') {
-                updateCloakStatus(true);
-            } else {
-                updateCloakStatus(false);
-            }
-        });
-        
-        // Initialize file input support
-        window.addEventListener('DOMContentLoaded', addFileInputSupport);
-    </script>
+        const doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write(fileContent);
+        doc.close();
+      }
+    });
+  </script>
 
 </body>
 </html>
